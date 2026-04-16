@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --dark: #1A1A1A;
+            --gold: #D4AF37;
+            --bg: #F0F2F5;
+            --white: #ffffff;
+            --border: #E0E0E0;
+            --text: #1A1A1A;
+            --muted: #888;
+            --danger: #D32F2F;
+            --success: #2E7D32;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ── LOGIN ─────────────────────────────────────── */
+        #login-screen {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%);
+        }
+        .login-box {
+            background: white; border-radius: 16px; padding: 48px 40px;
+            width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .login-logo { font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+        .login-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .login-sub   { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+        .login-box input {
+            width: 100%; padding: 12px 16px; border: 2px solid var(--border);
+            border-radius: 10px; font-size: 15px; margin-bottom: 12px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .login-box input:focus { border-color: var(--gold); }
+        .login-btn {
+            width: 100%; padding: 13px; background: var(--dark); color: white;
+            border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+            cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.2s;
+        }
+        .login-btn:hover { opacity: 0.85; }
+        .login-error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+        /* ── LAYOUT ─────────────────────────────────────── */
+        #admin-screen { display: none; min-height: 100vh; }
+        .layout { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px; background: var(--dark); color: white;
+            display: flex; flex-direction: column; padding: 0; flex-shrink: 0;
+        }
+        .sidebar-header {
+            padding: 28px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-brand { font-size: 11px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+        .sidebar-title { font-size: 16px; font-weight: 700; }
+        .sidebar-nav { flex: 1; padding: 16px 0; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 20px; color: rgba(255,255,255,0.65);
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            cursor: pointer; border: none; background: none; width: 100%;
+            text-align: left; transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        .nav-item:hover { color: white; background: rgba(255,255,255,0.07); }
+        .nav-item.active { color: white; background: rgba(212,175,55,0.15); border-left-color: var(--gold); }
+        .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn {
+            width: 100%; padding: 10px; background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; font-size: 13px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+
+        /* Main */
+        .main-content { flex: 1; padding: 32px; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px;
+        }
+        .section-title { font-size: 22px; font-weight: 700; }
+        .section-count { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+        /* Botones */
+        .btn-add {
+            padding: 10px 20px; background: var(--dark); color: white;
+            border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.3px;
+        }
+        .btn-add:hover { opacity: 0.8; }
+        .btn-icon {
+            padding: 7px 12px; border: none; border-radius: 6px;
+            font-size: 13px; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-edit { background: #F0F2F5; color: var(--text); }
+        .btn-edit:hover { background: #E0E0E0; }
+        .btn-del  { background: #FDECEA; color: var(--danger); }
+        .btn-del:hover  { background: #FBCCC7; }
+        .btn-url  { background: #E8F5E9; color: var(--success); font-size: 12px; }
+        .btn-url:hover  { background: #C8E6C9; }
+
+        /* Tarjetas en lista */
+        .cards-grid { display: flex; flex-direction: column; gap: 12px; }
+        .card-item {
+            background: white; border-radius: 12px; padding: 16px 20px;
+            display: flex; align-items: center; gap: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .card-avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            object-fit: cover; background: var(--border); flex-shrink: 0;
+        }
+        .card-logo-thumb {
+            width: 80px; height: 40px; object-fit: contain;
+            background: #F5F5F5; border-radius: 6px; padding: 4px; flex-shrink: 0;
+        }
+        .card-info { flex: 1; min-width: 0; }
+        .card-name { font-size: 15px; font-weight: 600; }
+        .card-sub  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; margin-left: 6px;
+            background: #F0F2F5; color: var(--muted);
+        }
+        .card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .color-dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 4px; vertical-align: middle; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* Config */
+        .config-card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); max-width: 560px; }
+        .config-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .config-desc  { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+        /* Formularios */
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        input[type=text], input[type=email], input[type=tel], input[type=password], input[type=url], select, textarea {
+            width: 100%; padding: 11px 14px; border: 2px solid var(--border);
+            border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;
+            font-family: inherit; background: white; color: var(--text);
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+        textarea { resize: vertical; min-height: 60px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+        /* Color picker inline */
+        .color-input-wrap { display: flex; align-items: center; gap: 10px; }
+        .color-input-wrap input[type=color] { width: 44px; height: 44px; padding: 2px; border-radius: 8px; cursor: pointer; border: 2px solid var(--border); }
+        .color-input-wrap input[type=text] { flex: 1; }
+
+        /* File upload */
+        .file-wrap { position: relative; }
+        .file-label {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border: 2px dashed var(--border);
+            border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--muted);
+            transition: border-color 0.2s;
+        }
+        .file-label:hover { border-color: var(--gold); }
+        .file-label input[type=file] { display: none; }
+        .file-preview { width: 48px; height: 48px; object-fit: contain; border-radius: 6px; background: #F5F5F5; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; border-radius: 16px; padding: 32px;
+            width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px; border: none; background: var(--bg);
+            border-radius: 50%; font-size: 18px; cursor: pointer; color: var(--muted);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: var(--border); }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 14px 20px; border-radius: 10px; color: white;
+            font-size: 14px; font-weight: 500; z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transform: translateY(0); transition: all 0.3s;
+            max-width: 320px;
+        }
+        .toast.success { background: var(--success); }
+        .toast.error   { background: var(--danger); }
+        .toast.hidden  { transform: translateY(80px); opacity: 0; }
+
+        /* URL preview */
+        .url-preview {
+            background: #F8F8F8; border: 1px solid var(--border);
+            border-radius: 8px; padding: 10px 14px;
+            font-size: 12px; color: var(--muted); word-break: break-all;
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        }
+        .url-preview span { flex: 1; }
+        .btn-copy {
+            padding: 4px 10px; background: var(--dark); color: white;
+            border: none; border-radius: 5px; font-size: 11px; cursor: pointer; white-space: nowrap;
+        }
+        .btn-submit {
+            padding: 11px 28px; background: var(--dark); color: white;
+            border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .btn-submit:hover { opacity: 0.85; }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-cancel {
+            padding: 11px 20px; background: var(--bg); color: var(--text);
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 14px; cursor: pointer;
+        }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+        .empty-state p { margin-top: 8px; font-size: 13px; }
+
+        /* Spinner inline */
+        .spinner-sm {
+            display: inline-block; width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%;
+            animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .layout { flex-direction: column; }
+            .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
+            .sidebar-nav { display: flex; padding: 0; }
+            .main-content { padding: 20px 16px; }
+            .form-row { grid-template-columns: 1fr; }
+            .card-item { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════════ LOGIN ════════════ -->
+<div id="login-screen">
+    <div class="login-box">
+        <div class="login-logo">Eurozasa</div>
+        <div class="login-title">Panel de Administración</div>
+        <div class="login-sub">Tarjetas digitales corporativas</div>
+        <input type="password" id="pwd-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter') login()">
+        <button class="login-btn" onclick="login()">Entrar</button>
+        <div class="login-error" id="login-error"></div>
+    </div>
+</div>
+
+<!-- ════════════ ADMIN ════════════ -->
+<div id="admin-screen">
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">Eurozasa</div>
+                <div class="sidebar-title">Admin Panel</div>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" onclick="showSection('empleados')">
+                    <span class="nav-icon">👤</span> Empleados
+                </button>
+                <button class="nav-item" onclick="showSection('empresas')">
+                    <span class="nav-icon">🏢</span> Empresas
+                </button>
+                <button class="nav-item" onclick="showSection('config')">
+                    <span class="nav-icon">⚙️</span> Configuración
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <!-- Empleados -->
+            <div id="section-empleados" class="section active">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Empleados</div>
+                        <div class="section-count" id="empleados-count"></div>
+                    </div>
+                    <button class="btn-add" onclick="openEmpleadoModal()">+ Nuevo empleado</button>
+                </div>
+                <div class="cards-grid" id="empleados-list"></div>
+            </div>
+
+            <!-- Empresas -->
+            <div id="section-empresas" class="section">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Empresas</div>
+                        <div class="section-count" id="empresas-count"></div>
+                    </div>
+                    <button class="btn-add" onclick="openEmpresaModal()">+ Nueva empresa</button>
+                </div>
+                <div class="cards-grid" id="empresas-list"></div>
+            </div>
+
+            <!-- Config -->
+            <div id="section-config" class="section">
+                <div class="section-title" style="margin-bottom:24px">Configuración</div>
+
+                <div class="config-card">
+                    <div class="config-title">Token de GitHub</div>
+                    <div class="config-desc">
+                        Necesario para guardar cambios. Crea un token en
+                        <strong>GitHub → Settings → Developer settings → Personal access tokens → Fine-grained</strong>
+                        con permiso de escritura en este repositorio.
+                    </div>
+                    <div class="form-group">
+                        <label>Personal Access Token</label>
+                        <input type="password" id="cfg-token" placeholder="github_pat_...">
+                    </div>
+                    <button class="btn-submit" onclick="saveToken()">Guardar token</button>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-title">Cambiar contraseña</div>
+                    <div class="config-desc">La contraseña se guarda en este navegador.</div>
+                    <div class="form-group">
+                        <label>Contraseña actual</label>
+                        <input type="password" id="cfg-pwd-old" placeholder="Contraseña actual">
+                    </div>
+                    <div class="form-group">
+                        <label>Nueva contraseña</label>
+                        <input type="password" id="cfg-pwd-new" placeholder="Nueva contraseña">
+                    </div>
+                    <button class="btn-submit" onclick="changePassword()">Cambiar contraseña</button>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-title">Repositorio GitHub</div>
+                    <div class="config-desc">Repositorio donde se guardan los datos (owner/repo).</div>
+                    <div class="form-group">
+                        <label>Repositorio</label>
+                        <input type="text" id="cfg-repo" placeholder="squirama/tarjeta-presentacion">
+                    </div>
+                    <div class="form-group">
+                        <label>URL base de la web</label>
+                        <input type="text" id="cfg-baseurl" placeholder="https://squirama.github.io/tarjeta-presentacion/">
+                    </div>
+                    <button class="btn-submit" onclick="saveRepoConfig()">Guardar</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ════════════ MODAL EMPLEADO ════════════ -->
+<div class="modal-overlay" id="modal-empleado">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-empleado-title">Nuevo empleado</div>
+            <button class="modal-close" onclick="closeModal('modal-empleado')">×</button>
+        </div>
+        <form onsubmit="saveEmpleado(event)">
+            <input type="hidden" id="emp-editing-id">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" id="emp-nombre" required oninput="autoId()">
+                </div>
+                <div class="form-group">
+                    <label>ID (URL) *</label>
+                    <input type="text" id="emp-id" required pattern="[a-z0-9\-]+" placeholder="ej: stiven">
+                    <div class="form-hint">Solo minúsculas, números y guiones</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Empresa *</label>
+                    <select id="emp-empresa" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Puesto *</label>
+                    <input type="text" id="emp-puesto" required placeholder="ej: Responsable de Mantenimiento">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="emp-tel" placeholder="+34 600 000 000">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="emp-email" placeholder="nombre@empresa.com">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>LinkedIn (URL)</label>
+                <input type="url" id="emp-linkedin" placeholder="https://linkedin.com/in/...">
+            </div>
+            <div class="form-group">
+                <label>Foto de perfil</label>
+                <label class="file-label" id="foto-label">
+                    <img id="foto-preview" class="file-preview" src="" alt="" style="display:none">
+                    <span id="foto-text">Seleccionar imagen...</span>
+                    <input type="file" id="emp-foto-file" accept="image/*" onchange="previewFoto(this)">
+                </label>
+                <div class="form-hint">O pega una URL directamente:</div>
+                <input type="url" id="emp-foto-url" placeholder="https://... (opcional)" style="margin-top:6px" oninput="previewFotoUrl(this.value)">
+            </div>
+            <div class="form-group" id="emp-url-preview-wrap" style="display:none">
+                <label>URL de la tarjeta</label>
+                <div class="url-preview">
+                    <span id="emp-url-preview"></span>
+                    <button type="button" class="btn-copy" onclick="copyUrl('emp-url-preview')">Copiar</button>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('modal-empleado')">Cancelar</button>
+                <button type="submit" class="btn-submit" id="btn-save-emp">Guardar empleado</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ════════════ MODAL EMPRESA ════════════ -->
+<div class="modal-overlay" id="modal-empresa">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-empresa-title">Nueva empresa</div>
+            <button class="modal-close" onclick="closeModal('modal-empresa')">×</button>
+        </div>
+        <form onsubmit="saveEmpresa(event)">
+            <input type="hidden" id="empr-editing-id">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" id="empr-nombre" required placeholder="ej: Bodegas Care">
+                </div>
+                <div class="form-group">
+                    <label>Subnombre</label>
+                    <input type="text" id="empr-subnombre" placeholder="ej: Gasolinera (opcional)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ID (URL) *</label>
+                <input type="text" id="empr-id" required pattern="[a-z0-9\-]+" placeholder="ej: care, joyosa-gasolinera">
+                <div class="form-hint">Solo minúsculas, números y guiones. No se puede cambiar después.</div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Color primario *</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="empr-color1-picker" value="#1A1A1A" oninput="syncColor(this,'empr-color1')">
+                        <input type="text"  id="empr-color1" value="#1A1A1A" oninput="syncColorText(this,'empr-color1-picker')" placeholder="#1A1A1A">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Color secundario *</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="empr-color2-picker" value="#D4AF37" oninput="syncColor(this,'empr-color2')">
+                        <input type="text"  id="empr-color2" value="#D4AF37" oninput="syncColorText(this,'empr-color2-picker')" placeholder="#D4AF37">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Logo</label>
+                <label class="file-label">
+                    <img id="logo-preview" class="file-preview" src="" alt="" style="display:none">
+                    <span id="logo-text">Seleccionar imagen...</span>
+                    <input type="file" id="empr-logo-file" accept="image/*" onchange="previewLogo(this)">
+                </label>
+                <div class="form-hint">O pega una URL directamente:</div>
+                <input type="url" id="empr-logo-url" placeholder="https://... (opcional)" style="margin-top:6px" oninput="previewLogoUrl(this.value)">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('modal-empresa')">Cancelar</button>
+                <button type="submit" class="btn-submit" id="btn-save-empr">Guardar empresa</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ════════════ TOAST ════════════ -->
+<div class="toast hidden" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIGURACIÓN Y ESTADO
+// ══════════════════════════════════════════════
+const DEFAULT_PASS  = 'admin2024';
+const DEFAULT_REPO  = 'squirama/tarjeta-presentacion';
+const DEFAULT_BASE  = 'https://squirama.github.io/tarjeta-presentacion/';
+
+let DB = { empresas: {}, empleados: [] };
+
+function getPass()    { return localStorage.getItem('admin_pass') || DEFAULT_PASS; }
+function getToken()   { return localStorage.getItem('github_token') || ''; }
+function getRepo()    { return localStorage.getItem('github_repo')  || DEFAULT_REPO; }
+function getBaseUrl() { return localStorage.getItem('card_base_url')|| DEFAULT_BASE; }
+
+// ══════════════════════════════════════════════
+//  LOGIN / LOGOUT
+// ══════════════════════════════════════════════
+function login() {
+    const pwd = document.getElementById('pwd-input').value;
+    if (pwd === getPass()) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-screen').style.display = '';
+        loadData();
+    } else {
+        document.getElementById('login-error').textContent = 'Contraseña incorrecta';
+        document.getElementById('pwd-input').value = '';
+    }
+}
+function logout() {
+    document.getElementById('admin-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = '';
+    document.getElementById('pwd-input').value = '';
+}
+
+// ══════════════════════════════════════════════
+//  NAVEGACIÓN
+// ══════════════════════════════════════════════
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    if (name === 'config') loadConfigForm();
+}
+
+// ══════════════════════════════════════════════
+//  GITHUB API
+// ══════════════════════════════════════════════
+async function ghGet(path) {
+    const r = await fetch(`https://api.github.com/repos/${getRepo()}/contents/${path}`, {
+        headers: { 'Authorization': 'Bearer ' + getToken(), 'Accept': 'application/vnd.github+json' }
+    });
+    if (!r.ok) throw new Error('GitHub ' + r.status + ' al leer ' + path);
+    return r.json();
+}
+
+async function ghPut(path, content, sha, message, isBinary = false) {
+    const encoded = isBinary ? content : btoa(unescape(encodeURIComponent(content)));
+    const body    = { message: message || 'Actualizar ' + path, content: encoded };
+    if (sha) body.sha = sha;
+    const r = await fetch(`https://api.github.com/repos/${getRepo()}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + getToken(),
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github+json'
+        },
+        body: JSON.stringify(body)
+    });
+    if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.message || 'GitHub ' + r.status);
+    }
+    return r.json();
+}
+
+async function saveDataJson() {
+    let sha = null;
+    try { const f = await ghGet('data.json'); sha = f.sha; } catch(e) {}
+    await ghPut('data.json', JSON.stringify(DB, null, 2), sha, 'Actualizar tarjetas corporativas');
+}
+
+async function uploadImage(folder, filename, file) {
+    const base64 = await fileToBase64(file);
+    const path   = folder + '/' + filename;
+    let sha = null;
+    try { const f = await ghGet(path); sha = f.sha; } catch(e) {}
+    await ghPut(path, base64, sha, 'Subir imagen ' + filename, true);
+    return path;
+}
+
+function fileToBase64(file) {
+    return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload  = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+    });
+}
+
+// ══════════════════════════════════════════════
+//  CARGAR / RENDERIZAR DATOS
+// ══════════════════════════════════════════════
+async function loadData() {
+    try {
+        const f    = await ghGet('data.json');
+        const json = JSON.parse(atob(f.content));
+        DB = json;
+    } catch(e) {
+        // data.json aún no existe o hay error — usamos estructura vacía
+        DB = { empresas: {}, empleados: [] };
+    }
+    renderEmpleados();
+    renderEmpresas();
+}
+
+function renderEmpleados() {
+    const list  = document.getElementById('empleados-list');
+    const emps  = DB.empleados || [];
+    document.getElementById('empleados-count').textContent = emps.length + ' empleado' + (emps.length !== 1 ? 's' : '');
+
+    if (!emps.length) {
+        list.innerHTML = '<div class="empty-state"><b>Sin empleados</b><p>Añade el primero con el botón de arriba</p></div>';
+        return;
+    }
+
+    list.innerHTML = emps.map((e, i) => {
+        const emp = DB.empresas[e.empresa] || {};
+        const url = cardUrl(e.empresa, e.id);
+        const badge = emp.subnombre ? emp.nombre + ' · ' + emp.subnombre : (emp.nombre || e.empresa);
+        return `
+        <div class="card-item">
+            <img class="card-avatar" src="${e.foto || ''}" onerror="this.style.display='none'" alt="">
+            <div class="card-info">
+                <div class="card-name">${e.nombre} <span class="badge">${badge}</span></div>
+                <div class="card-sub">${e.puesto || ''}</div>
+                <div class="url-preview" style="margin-top:8px">
+                    <span>${url}</span>
+                    <button class="btn-copy" onclick="copyUrl('',\`${url}\`)">Copiar</button>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-icon btn-edit" onclick="openEmpleadoModal(${i})">Editar</button>
+                <button class="btn-icon btn-del"  onclick="deleteEmpleado(${i})">Eliminar</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderEmpresas() {
+    const list = document.getElementById('empresas-list');
+    const keys = Object.keys(DB.empresas || {});
+    document.getElementById('empresas-count').textContent = keys.length + ' empresa' + (keys.length !== 1 ? 's' : '');
+
+    if (!keys.length) {
+        list.innerHTML = '<div class="empty-state"><b>Sin empresas</b><p>Añade la primera con el botón de arriba</p></div>';
+        return;
+    }
+
+    list.innerHTML = keys.map(id => {
+        const e = DB.empresas[id];
+        const nombre = e.subnombre ? e.nombre + ' — ' + e.subnombre : e.nombre;
+        return `
+        <div class="card-item">
+            <img class="card-logo-thumb" src="${e.logo || ''}" onerror="this.style.display='none'" alt="">
+            <div class="card-info">
+                <div class="card-name">
+                    <span class="color-dot" style="background:${e.color_primario}"></span>
+                    <span class="color-dot" style="background:${e.color_secundario}"></span>
+                    ${nombre}
+                </div>
+                <div class="card-sub">ID: ${id} · ${(DB.empleados||[]).filter(em=>em.empresa===id).length} empleado(s)</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-icon btn-edit" onclick="openEmpresaModal('${id}')">Editar</button>
+                <button class="btn-icon btn-del"  onclick="deleteEmpresa('${id}')">Eliminar</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function cardUrl(empresaId, empleadoId) {
+    return getBaseUrl() + '?empresa=' + empresaId + '&id=' + empleadoId;
+}
+
+// ══════════════════════════════════════════════
+//  MODAL EMPLEADO
+// ══════════════════════════════════════════════
+function openEmpleadoModal(index) {
+    const isEdit = index !== undefined;
+    document.getElementById('modal-empleado-title').textContent = isEdit ? 'Editar empleado' : 'Nuevo empleado';
+    document.getElementById('emp-editing-id').value = isEdit ? index : '';
+
+    // Populate empresa select
+    const sel = document.getElementById('emp-empresa');
+    sel.innerHTML = Object.entries(DB.empresas || {}).map(([id, e]) =>
+        `<option value="${id}">${e.subnombre ? e.nombre + ' — ' + e.subnombre : e.nombre}</option>`
+    ).join('');
+
+    if (isEdit) {
+        const e = DB.empleados[index];
+        document.getElementById('emp-nombre').value   = e.nombre   || '';
+        document.getElementById('emp-id').value       = e.id       || '';
+        document.getElementById('emp-empresa').value  = e.empresa  || '';
+        document.getElementById('emp-puesto').value   = e.puesto   || '';
+        document.getElementById('emp-tel').value      = e.telefono || '';
+        document.getElementById('emp-email').value    = e.email    || '';
+        document.getElementById('emp-linkedin').value = e.linkedin || '';
+        document.getElementById('emp-foto-url').value = e.foto     || '';
+        previewFotoUrl(e.foto || '');
+        updateEmpUrlPreview();
+    } else {
+        document.getElementById('emp-nombre').value   = '';
+        document.getElementById('emp-id').value       = '';
+        document.getElementById('emp-puesto').value   = '';
+        document.getElementById('emp-tel').value      = '';
+        document.getElementById('emp-email').value    = '';
+        document.getElementById('emp-linkedin').value = '';
+        document.getElementById('emp-foto-url').value = '';
+        document.getElementById('emp-foto-file').value = '';
+        document.getElementById('foto-preview').style.display = 'none';
+        document.getElementById('foto-text').textContent = 'Seleccionar imagen...';
+        document.getElementById('emp-url-preview-wrap').style.display = 'none';
+    }
+
+    document.getElementById('modal-empleado').classList.add('open');
+}
+
+function autoId() {
+    const editing = document.getElementById('emp-editing-id').value;
+    if (editing !== '') return; // no sobreescribir si editamos
+    const nombre = document.getElementById('emp-nombre').value;
+    const parts  = nombre.trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .split(/\s+/).slice(0, 2);
+    document.getElementById('emp-id').value = parts.join('-').replace(/[^a-z0-9\-]/g,'');
+    updateEmpUrlPreview();
+}
+
+function updateEmpUrlPreview() {
+    const empId  = document.getElementById('emp-id').value;
+    const empEmp = document.getElementById('emp-empresa').value;
+    const wrap   = document.getElementById('emp-url-preview-wrap');
+    if (empId && empEmp) {
+        document.getElementById('emp-url-preview').textContent = cardUrl(empEmp, empId);
+        wrap.style.display = '';
+    } else {
+        wrap.style.display = 'none';
+    }
+}
+
+async function saveEmpleado(event) {
+    event.preventDefault();
+    const btn = document.getElementById('btn-save-emp');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-sm"></span>Guardando...';
+
+    try {
+        const editingIdx = document.getElementById('emp-editing-id').value;
+        const isEdit     = editingIdx !== '';
+
+        let fotoPath = document.getElementById('emp-foto-url').value.trim();
+        const fotoFile = document.getElementById('emp-foto-file').files[0];
+
+        if (fotoFile) {
+            const empId = document.getElementById('emp-id').value;
+            const ext   = fotoFile.name.split('.').pop();
+            fotoPath    = await uploadImage('assets/fotos', empId + '.' + ext, fotoFile);
+        }
+
+        const empleado = {
+            id:       document.getElementById('emp-id').value.trim(),
+            empresa:  document.getElementById('emp-empresa').value,
+            nombre:   document.getElementById('emp-nombre').value.trim(),
+            puesto:   document.getElementById('emp-puesto').value.trim(),
+            telefono: document.getElementById('emp-tel').value.trim(),
+            email:    document.getElementById('emp-email').value.trim(),
+            linkedin: document.getElementById('emp-linkedin').value.trim(),
+            foto:     fotoPath
+        };
+
+        if (!DB.empleados) DB.empleados = [];
+
+        if (isEdit) {
+            DB.empleados[parseInt(editingIdx)] = empleado;
+        } else {
+            const dup = DB.empleados.find(e => e.id === empleado.id && e.empresa === empleado.empresa);
+            if (dup) throw new Error('Ya existe un empleado con ese ID en esa empresa');
+            DB.empleados.push(empleado);
+        }
+
+        await saveDataJson();
+        closeModal('modal-empleado');
+        renderEmpleados();
+        showToast('Empleado guardado correctamente', 'success');
+
+    } catch(e) {
+        showToast('Error: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar empleado';
+    }
+}
+
+function deleteEmpleado(index) {
+    if (!confirm('¿Eliminar este empleado?')) return;
+    DB.empleados.splice(index, 1);
+    saveDataJson()
+        .then(() => { renderEmpleados(); showToast('Empleado eliminado', 'success'); })
+        .catch(e  => showToast('Error: ' + e.message, 'error'));
+}
+
+// ══════════════════════════════════════════════
+//  MODAL EMPRESA
+// ══════════════════════════════════════════════
+function openEmpresaModal(id) {
+    const isEdit = id !== undefined;
+    document.getElementById('modal-empresa-title').textContent = isEdit ? 'Editar empresa' : 'Nueva empresa';
+    document.getElementById('empr-editing-id').value = isEdit ? id : '';
+
+    if (isEdit) {
+        const e = DB.empresas[id];
+        document.getElementById('empr-id').value          = id;
+        document.getElementById('empr-id').readOnly       = true;
+        document.getElementById('empr-nombre').value      = e.nombre      || '';
+        document.getElementById('empr-subnombre').value   = e.subnombre   || '';
+        document.getElementById('empr-color1').value      = e.color_primario   || '#1A1A1A';
+        document.getElementById('empr-color2').value      = e.color_secundario || '#D4AF37';
+        document.getElementById('empr-color1-picker').value = e.color_primario   || '#1A1A1A';
+        document.getElementById('empr-color2-picker').value = e.color_secundario || '#D4AF37';
+        document.getElementById('empr-logo-url').value    = e.logo || '';
+        previewLogoUrl(e.logo || '');
+    } else {
+        document.getElementById('empr-id').value          = '';
+        document.getElementById('empr-id').readOnly       = false;
+        document.getElementById('empr-nombre').value      = '';
+        document.getElementById('empr-subnombre').value   = '';
+        document.getElementById('empr-color1').value      = '#1A1A1A';
+        document.getElementById('empr-color2').value      = '#D4AF37';
+        document.getElementById('empr-color1-picker').value = '#1A1A1A';
+        document.getElementById('empr-color2-picker').value = '#D4AF37';
+        document.getElementById('empr-logo-url').value    = '';
+        document.getElementById('empr-logo-file').value   = '';
+        document.getElementById('logo-preview').style.display = 'none';
+        document.getElementById('logo-text').textContent  = 'Seleccionar imagen...';
+    }
+
+    document.getElementById('modal-empresa').classList.add('open');
+}
+
+async function saveEmpresa(event) {
+    event.preventDefault();
+    const btn = document.getElementById('btn-save-empr');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-sm"></span>Guardando...';
+
+    try {
+        const editingId = document.getElementById('empr-editing-id').value;
+        const isEdit    = editingId !== '';
+        const id        = document.getElementById('empr-id').value.trim();
+
+        if (!isEdit && DB.empresas[id]) throw new Error('Ya existe una empresa con ese ID');
+
+        let logoPath = document.getElementById('empr-logo-url').value.trim();
+        const logoFile = document.getElementById('empr-logo-file').files[0];
+        if (logoFile) {
+            const ext = logoFile.name.split('.').pop();
+            logoPath  = await uploadImage('assets/logos', id + '.' + ext, logoFile);
+        }
+
+        if (!DB.empresas) DB.empresas = {};
+        DB.empresas[id] = {
+            nombre:           document.getElementById('empr-nombre').value.trim(),
+            subnombre:        document.getElementById('empr-subnombre').value.trim(),
+            color_primario:   document.getElementById('empr-color1').value.trim(),
+            color_secundario: document.getElementById('empr-color2').value.trim(),
+            logo:             logoPath
+        };
+
+        await saveDataJson();
+        closeModal('modal-empresa');
+        renderEmpresas();
+        showToast('Empresa guardada correctamente', 'success');
+
+    } catch(e) {
+        showToast('Error: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar empresa';
+    }
+}
+
+function deleteEmpresa(id) {
+    const tiene = (DB.empleados || []).filter(e => e.empresa === id).length;
+    if (tiene > 0) { showToast('No puedes eliminar una empresa con empleados asignados', 'error'); return; }
+    if (!confirm('¿Eliminar la empresa "' + id + '"?')) return;
+    delete DB.empresas[id];
+    saveDataJson()
+        .then(() => { renderEmpresas(); showToast('Empresa eliminada', 'success'); })
+        .catch(e  => showToast('Error: ' + e.message, 'error'));
+}
+
+// ══════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ══════════════════════════════════════════════
+function loadConfigForm() {
+    const t = document.getElementById('cfg-token');
+    if (t) t.value = getToken() ? '••••••••••••' : '';
+    const r = document.getElementById('cfg-repo');
+    if (r) r.value = getRepo();
+    const b = document.getElementById('cfg-baseurl');
+    if (b) b.value = getBaseUrl();
+}
+
+function saveToken() {
+    const v = document.getElementById('cfg-token').value.trim();
+    if (!v || v.startsWith('•')) { showToast('Introduce un token válido', 'error'); return; }
+    localStorage.setItem('github_token', v);
+    showToast('Token guardado', 'success');
+}
+
+function changePassword() {
+    const old = document.getElementById('cfg-pwd-old').value;
+    const nw  = document.getElementById('cfg-pwd-new').value;
+    if (old !== getPass()) { showToast('Contraseña actual incorrecta', 'error'); return; }
+    if (!nw || nw.length < 4) { showToast('La nueva contraseña debe tener al menos 4 caracteres', 'error'); return; }
+    localStorage.setItem('admin_pass', nw);
+    document.getElementById('cfg-pwd-old').value = '';
+    document.getElementById('cfg-pwd-new').value = '';
+    showToast('Contraseña actualizada', 'success');
+}
+
+function saveRepoConfig() {
+    const repo = document.getElementById('cfg-repo').value.trim();
+    const base = document.getElementById('cfg-baseurl').value.trim();
+    if (repo) localStorage.setItem('github_repo', repo);
+    if (base) localStorage.setItem('card_base_url', base);
+    showToast('Configuración guardada', 'success');
+}
+
+// ══════════════════════════════════════════════
+//  UTILIDADES
+// ══════════════════════════════════════════════
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function previewFoto(input) {
+    if (!input.files[0]) return;
+    const url = URL.createObjectURL(input.files[0]);
+    const img = document.getElementById('foto-preview');
+    img.src = url; img.style.display = '';
+    document.getElementById('foto-text').textContent = input.files[0].name;
+    document.getElementById('emp-foto-url').value = '';
+}
+function previewFotoUrl(url) {
+    const img = document.getElementById('foto-preview');
+    if (url) { img.src = url; img.style.display = ''; document.getElementById('foto-text').textContent = 'Imagen desde URL'; }
+    else      { img.style.display = 'none'; document.getElementById('foto-text').textContent = 'Seleccionar imagen...'; }
+}
+function previewLogo(input) {
+    if (!input.files[0]) return;
+    const url = URL.createObjectURL(input.files[0]);
+    const img = document.getElementById('logo-preview');
+    img.src = url; img.style.display = '';
+    document.getElementById('logo-text').textContent = input.files[0].name;
+    document.getElementById('empr-logo-url').value = '';
+}
+function previewLogoUrl(url) {
+    const img = document.getElementById('logo-preview');
+    if (url) { img.src = url; img.style.display = ''; document.getElementById('logo-text').textContent = 'Imagen desde URL'; }
+    else      { img.style.display = 'none'; document.getElementById('logo-text').textContent = 'Seleccionar imagen...'; }
+}
+
+function syncColor(picker, textId) {
+    document.getElementById(textId).value = picker.value;
+}
+function syncColorText(input, pickerId) {
+    if (/^#[0-9A-Fa-f]{6}$/.test(input.value))
+        document.getElementById(pickerId).value = input.value;
+}
+
+function copyUrl(elId, directUrl) {
+    const url = directUrl || document.getElementById(elId).textContent;
+    navigator.clipboard.writeText(url)
+        .then(() => showToast('URL copiada', 'success'))
+        .catch(() => prompt('Copia esta URL:', url));
+}
+
+let _toastTimer = null;
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast ' + type;
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { t.classList.add('hidden'); }, 3500);
+}
+</script>
+</body>
+</html>

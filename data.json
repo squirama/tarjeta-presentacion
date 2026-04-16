@@ -1,0 +1,23 @@
+{
+  "empresas": {
+    "care": {
+      "nombre": "Bodegas Care",
+      "subnombre": "",
+      "color_primario": "#1A1A1A",
+      "color_secundario": "#D4AF37",
+      "logo": "Care-wines-2-e1596727301651-600x237.png"
+    }
+  },
+  "empleados": [
+    {
+      "id": "stiven",
+      "empresa": "care",
+      "nombre": "Stiven Quirama Orozco",
+      "puesto": "Responsable de Mantenimiento",
+      "telefono": "+34722894100",
+      "email": "mantenimiento@bodegascare.com",
+      "linkedin": "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
+      "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
+    }
+  ]
+}
