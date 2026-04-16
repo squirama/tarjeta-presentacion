@@ -628,11 +628,9 @@ function fileToBase64(file) {
 // ══════════════════════════════════════════════
 async function loadData() {
     try {
-        const f    = await ghGet('data.json');
-        const json = JSON.parse(atob(f.content));
-        DB = json;
+        const res = await fetch('./data.json?t=' + Date.now());
+        DB = await res.json();
     } catch(e) {
-        // data.json aún no existe o hay error — usamos estructura vacía
         DB = { empresas: {}, empleados: [] };
     }
     renderEmpleados();
