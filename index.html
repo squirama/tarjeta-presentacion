@@ -178,36 +178,6 @@
             opacity: 0.8;
         }
 
-        .qr-section {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .qr-title {
-            font-size: 12px;
-            color: #999;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        #qrcode {
-            display: inline-block;
-            padding: 12px;
-            background: white;
-            border-radius: 8px;
-            border: 2px solid var(--secondary);
-        }
-
-        #qrcode canvas {
-            border-radius: 4px;
-        }
-
         .buttons {
             display: flex;
             gap: 10px;
@@ -404,17 +374,12 @@
                 </div>
             </div>
 
-            <div class="qr-section">
-                <div class="qr-title">Escanea para Guardar Contacto</div>
-                <div id="qrcode"></div>
-            </div>
-
             <div class="buttons">
-                <button class="btn btn-primary" onclick="downloadVCard()">
-                    ⬇️ Guardar Contacto
-                </button>
+                <a class="btn btn-primary" href="vcard.vcf">
+                    Añadir a Contactos
+                </a>
                 <button class="btn btn-secondary" onclick="shareCard()">
-                    📤 Compartir Tarjeta
+                    Compartir Tarjeta
                 </button>
             </div>
 
@@ -423,9 +388,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Script QR.js desde CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
         // Datos del contacto
@@ -439,82 +401,23 @@
             website: ""
         };
 
-        // Generar QR apuntando al archivo vCard en GitHub Pages
-        function generateQR() {
-            const qrUrl = 'https://squirama.github.io/tarjeta-presentacion/vcard.vcf';
-
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-
-            new QRCode(qrContainer, {
-                text: qrUrl,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        // Generar vCard (.vcf)
-        function generateVCard() {
-            const vCard = `BEGIN:VCARD
-VERSION:3.0
-FN:${contact.name}
-N:${contact.name.split(' ').pop()};${contact.name.split(' ')[0]};;;
-TITLE:${contact.position}
-ORG:${contact.company}
-TEL;TYPE=CELL:${contact.phone}
-EMAIL;TYPE=INTERNET:${contact.email}
-URL:${contact.linkedin}
-NOTE:Responsable de Mantenimiento en Bodegas Care
-END:VCARD`;
-            return vCard;
-        }
-
-        // Descargar vCard
-        function downloadVCard() {
-            const vCard = generateVCard();
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vCard));
-            element.setAttribute('download', 'Stiven_Quirama_Orozco.vcf');
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
-        }
-
         // Compartir tarjeta
         function shareCard() {
-            const text = `Contacto: ${contact.name}
-${contact.position} en ${contact.company}
-📧 ${contact.email}
-📱 ${contact.phone}
-🔗 ${contact.linkedin}`;
-
+            const url = 'https://squirama.github.io/tarjeta-presentacion/';
             if (navigator.share) {
                 navigator.share({
-                    title: 'Tarjeta de Presentación Digital',
-                    text: text
+                    title: `${contact.name} — ${contact.position}`,
+                    url: url
                 }).catch(err => console.log('Error al compartir:', err));
             } else {
-                alert('Copia esta información:\n\n' + text);
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Enlace copiado al portapapeles');
+                }).catch(() => {
+                    alert('Copia este enlace: ' + url);
+                });
             }
         }
 
-        // Generar QR al cargar la página
-        window.addEventListener('load', generateQR);
-
-        // Regenerar QR si cambia el tamaño (responsive)
-        window.addEventListener('resize', debounce(generateQR, 500));
-
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                clearTimeout(timeout);
-                timeout = setTimeout(func, wait);
-            };
-        }
     </script>
 </body>
 </html>
