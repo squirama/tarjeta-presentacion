@@ -413,11 +413,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>LinkedIn (URL)</label>
-                    <input type="url" id="emp-linkedin" placeholder="https://linkedin.com/in/...">
+                    <input type="text" id="emp-linkedin" placeholder="https://linkedin.com/in/...">
                 </div>
                 <div class="form-group">
                     <label>Web (URL)</label>
-                    <input type="url" id="emp-web" placeholder="https://www.empresa.com">
+                    <input type="text" id="emp-web" placeholder="https://www.empresa.com">
                 </div>
             </div>
             <div class="form-group">
@@ -433,7 +433,7 @@
                 </div>
                 <div id="foto-size-warn" style="display:none;color:#D32F2F;font-size:12px;margin-top:4px;font-weight:600"></div>
                 <div class="form-hint" style="margin-top:8px">O pega una URL directamente:</div>
-                <input type="url" id="emp-foto-url" placeholder="https://... (opcional)" style="margin-top:4px" oninput="previewFotoUrl(this.value)">
+                <input type="text" id="emp-foto-url" placeholder="https://... o ruta relativa (opcional)" style="margin-top:4px" oninput="previewFotoUrl(this.value)">
             </div>
             <div class="form-group" id="emp-url-preview-wrap" style="display:none">
                 <label>URL de la tarjeta</label>
@@ -498,7 +498,7 @@
                     <input type="file" id="empr-logo-file" accept="image/*" onchange="previewLogo(this)">
                 </label>
                 <div class="form-hint">O pega una URL directamente:</div>
-                <input type="url" id="empr-logo-url" placeholder="https://... (opcional)" style="margin-top:6px" oninput="previewLogoUrl(this.value)">
+                <input type="text" id="empr-logo-url" placeholder="https://... o ruta relativa (opcional)" style="margin-top:6px" oninput="previewLogoUrl(this.value)">
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('modal-empresa')">Cancelar</button>
