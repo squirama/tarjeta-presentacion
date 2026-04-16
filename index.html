@@ -223,6 +223,36 @@
             transform: scale(0.96);
         }
 
+        .qr-section {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .qr-title {
+            font-size: 11px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--secondary);
+        }
+
+        #qrcode canvas {
+            border-radius: 4px;
+        }
+
         .footer {
             text-align: center;
             font-size: 11px;
@@ -374,8 +404,13 @@
                 </div>
             </div>
 
+            <div class="qr-section" id="qr-section">
+                <div class="qr-title">Escanea para guardar contacto</div>
+                <div id="qrcode"></div>
+            </div>
+
             <div class="buttons">
-                <a class="btn btn-primary" href="vcard.vcf">
+                <a class="btn btn-primary" id="btn-contacto" href="vcard.vcf">
                     Añadir a Contactos
                 </a>
                 <button class="btn btn-secondary" onclick="shareCard()">
@@ -389,6 +424,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         // Datos del contacto
         const contact = {
@@ -400,6 +436,25 @@
             linkedin: "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
             website: ""
         };
+
+        // Detectar si viene de un escaneo QR
+        const isScanned = new URLSearchParams(window.location.search).get('scan') === '1';
+
+        if (isScanned) {
+            // Ocultar QR, mostrar solo botones
+            document.getElementById('qr-section').style.display = 'none';
+        } else {
+            // Mostrar QR, ocultar botón de añadir contacto
+            document.getElementById('btn-contacto').style.display = 'none';
+            new QRCode(document.getElementById('qrcode'), {
+                text: 'https://squirama.github.io/tarjeta-presentacion/?scan=1',
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
 
         // Compartir tarjeta
         function shareCard() {
