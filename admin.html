@@ -522,7 +522,7 @@ function login() {
     const pwd = document.getElementById('pwd-input').value;
     if (pwd === getPass()) {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('admin-screen').style.display = '';
+        document.getElementById('admin-screen').style.display = 'block';
         loadData();
     } else {
         document.getElementById('login-error').textContent = 'Contraseña incorrecta';
