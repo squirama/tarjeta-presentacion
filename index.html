@@ -414,11 +414,9 @@
             website: ""
         };
 
-        // Generar QR con vCard en base64
+        // Generar QR apuntando al archivo vCard en GitHub Pages
         function generateQR() {
-            const vCard = generateVCard();
-            const vCardBase64 = btoa(unescape(encodeURIComponent(vCard)));
-            const qrUrl = `data:text/vcard;base64,${vCardBase64}`;
+            const qrUrl = 'https://squirama.github.io/tarjeta-presentacion/vcard.vcf';
 
             const qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = '';
