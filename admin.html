@@ -529,21 +529,31 @@ function getBaseUrl() { return localStorage.getItem('card_base_url')|| DEFAULT_B
 // ══════════════════════════════════════════════
 //  LOGIN / LOGOUT
 // ══════════════════════════════════════════════
+function enterAdmin() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    loadData();
+}
 function login() {
     const pwd = document.getElementById('pwd-input').value;
     if (pwd === getPass()) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('admin-screen').style.display = 'block';
-        loadData();
+        localStorage.setItem('admin_session', '1');
+        enterAdmin();
     } else {
         document.getElementById('login-error').textContent = 'Contraseña incorrecta';
         document.getElementById('pwd-input').value = '';
     }
 }
 function logout() {
+    localStorage.removeItem('admin_session');
     document.getElementById('admin-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = '';
     document.getElementById('pwd-input').value = '';
+}
+
+// Restaurar sesión si ya estaba logueado
+if (localStorage.getItem('admin_session') === '1') {
+    enterAdmin();
 }
 
 // ══════════════════════════════════════════════
