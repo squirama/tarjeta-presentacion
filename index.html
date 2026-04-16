@@ -135,10 +135,7 @@
         }
 
         .contact-icon {
-            font-size: 20px;
-            color: var(--primary);
-            min-width: 24px;
-            text-align: center;
+            display: none;
         }
 
         .contact-details {
@@ -161,13 +158,16 @@
             font-size: 14px;
             color: var(--dark-text);
             font-weight: 500;
-            word-break: break-all;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .contact-link {
             color: var(--primary);
             text-decoration: none;
             cursor: pointer;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .contact-link:active {
