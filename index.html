@@ -414,7 +414,8 @@
                 'ORG:' + nombreEmpresa,
                 'TEL;TYPE=CELL:' + (e.telefono || ''),
                 'EMAIL;TYPE=INTERNET:' + (e.email || ''),
-                e.linkedin ? 'URL:' + e.linkedin : '',
+                e.web      ? 'URL:' + e.web : '',
+                e.linkedin ? 'X-SOCIALPROFILE;TYPE=linkedin:' + e.linkedin : '',
                 'END:VCARD'
             ].filter(Boolean).join('\n');
 
