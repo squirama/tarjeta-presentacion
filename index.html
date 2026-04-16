@@ -280,17 +280,36 @@
             margin-bottom: 12px;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             .phone-frame {
-                border-radius: 30px;
-                padding: 8px;
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+                max-width: 100%;
+                aspect-ratio: unset;
+                min-height: 100vh;
             }
 
             .screen {
-                border-radius: 24px;
+                border-radius: 0;
                 padding: 16px;
             }
 
+            .screen::before {
+                display: none;
+            }
+
+            .status-bar {
+                display: none;
+            }
+
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
             .header {
                 padding: 18px 12px;
                 margin-bottom: 16px;
