@@ -410,9 +410,9 @@
             </div>
 
             <div class="buttons">
-                <a class="btn btn-primary" id="btn-contacto" href="vcard.vcf">
+                <button class="btn btn-primary" id="btn-contacto" onclick="addContact()">
                     Añadir a Contactos
-                </a>
+                </button>
                 <button class="btn btn-secondary" onclick="shareCard()">
                     Compartir Tarjeta
                 </button>
@@ -454,6 +454,35 @@
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
+        }
+
+        // Añadir a contactos sin descarga
+        function addContact() {
+            const vCard = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'FN:' + contact.name,
+                'N:Orozco;Stiven;;;',
+                'TITLE:' + contact.position,
+                'ORG:' + contact.company,
+                'TEL;TYPE=CELL:' + contact.phone,
+                'EMAIL;TYPE=INTERNET:' + contact.email,
+                'URL:' + contact.linkedin,
+                'END:VCARD'
+            ].join('\n');
+
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // iOS Safari: abre el diálogo "Nuevo Contacto" directamente
+                window.location.href = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vCard);
+            } else {
+                // Android y otros: blob URL con tipo correcto
+                const blob = new Blob([vCard], { type: 'text/vcard' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
         }
 
         // Compartir tarjeta
