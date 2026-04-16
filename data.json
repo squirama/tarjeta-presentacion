@@ -6,6 +6,13 @@
       "color_primario": "#1A1A1A",
       "color_secundario": "#D4AF37",
       "logo": "Care-wines-2-e1596727301651-600x237.png"
+    },
+    "joyosa": {
+      "nombre": "La Joyosa",
+      "subnombre": "Estación de Servicio",
+      "color_primario": "#CC0000",
+      "color_secundario": "#707070",
+      "logo": "logo-estacion-lajoyosa.png"
     }
   },
   "empleados": [
@@ -17,6 +24,7 @@
       "telefono": "+34722894100",
       "email": "mantenimiento@bodegascare.com",
       "linkedin": "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
+      "web": "",
       "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
     }
   ]

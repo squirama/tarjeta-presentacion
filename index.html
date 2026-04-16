@@ -254,6 +254,12 @@
                         <a id="c-linkedin" href="#" target="_blank" class="contact-link">Ver Perfil</a>
                     </div>
                 </div>
+                <div class="contact-item" id="item-web" style="display:none">
+                    <div class="contact-details">
+                        <span class="contact-label">Web</span>
+                        <a id="c-web" href="#" target="_blank" class="contact-link"></a>
+                    </div>
+                </div>
                 <div class="contact-item" id="item-empresa" style="display:none">
                     <div class="contact-details">
                         <span class="contact-label">Empresa</span>
@@ -361,6 +367,12 @@
             if (e.linkedin) {
                 set('c-linkedin', 'href', e.linkedin);
                 show('item-linkedin');
+            }
+            if (e.web) {
+                const webLabel = e.web.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                set('c-web', 'text', webLabel);
+                set('c-web', 'href', e.web);
+                show('item-web');
             }
 
             const nombreEmpresa = emp.subnombre

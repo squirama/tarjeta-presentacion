@@ -410,9 +410,15 @@
                     <input type="email" id="emp-email" placeholder="nombre@empresa.com">
                 </div>
             </div>
-            <div class="form-group">
-                <label>LinkedIn (URL)</label>
-                <input type="url" id="emp-linkedin" placeholder="https://linkedin.com/in/...">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>LinkedIn (URL)</label>
+                    <input type="url" id="emp-linkedin" placeholder="https://linkedin.com/in/...">
+                </div>
+                <div class="form-group">
+                    <label>Web (URL)</label>
+                    <input type="url" id="emp-web" placeholder="https://www.empresa.com">
+                </div>
             </div>
             <div class="form-group">
                 <label>Foto de perfil</label>
@@ -421,8 +427,13 @@
                     <span id="foto-text">Seleccionar imagen...</span>
                     <input type="file" id="emp-foto-file" accept="image/*" onchange="previewFoto(this)">
                 </label>
-                <div class="form-hint">O pega una URL directamente:</div>
-                <input type="url" id="emp-foto-url" placeholder="https://... (opcional)" style="margin-top:6px" oninput="previewFotoUrl(this.value)">
+                <div class="form-hint" style="margin-top:6px">
+                    📐 Recomendado: JPG cuadrada, 400×400px, máx <strong>300KB</strong>.
+                    El sistema la comprimirá automáticamente si es mayor.
+                </div>
+                <div id="foto-size-warn" style="display:none;color:#D32F2F;font-size:12px;margin-top:4px;font-weight:600"></div>
+                <div class="form-hint" style="margin-top:8px">O pega una URL directamente:</div>
+                <input type="url" id="emp-foto-url" placeholder="https://... (opcional)" style="margin-top:4px" oninput="previewFotoUrl(this.value)">
             </div>
             <div class="form-group" id="emp-url-preview-wrap" style="display:none">
                 <label>URL de la tarjeta</label>
@@ -662,25 +673,46 @@ function renderEmpresas() {
     }
 
     list.innerHTML = keys.map(id => {
-        const e = DB.empresas[id];
-        const nombre = e.subnombre ? e.nombre + ' — ' + e.subnombre : e.nombre;
+        const e    = DB.empresas[id];
+        const num  = (DB.empleados||[]).filter(em => em.empresa === id).length;
+        const sub  = e.subnombre ? `<div style="font-size:11px;opacity:0.75;letter-spacing:1px;text-transform:uppercase;margin-top:2px">${e.subnombre}</div>` : '';
         return `
-        <div class="card-item">
-            <img class="card-logo-thumb" src="${e.logo || ''}" onerror="this.style.display='none'" alt="">
-            <div class="card-info">
-                <div class="card-name">
-                    <span class="color-dot" style="background:${e.color_primario}"></span>
-                    <span class="color-dot" style="background:${e.color_secundario}"></span>
-                    ${nombre}
+        <div style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.08)">
+            <!-- Cabecera de color de la empresa -->
+            <div style="background:linear-gradient(135deg,${e.color_primario},${lightenHex(e.color_primario,25)});padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+                <div>
+                    <img src="${e.logo||''}" style="height:36px;max-width:160px;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none'" alt="">
+                    ${sub}
                 </div>
-                <div class="card-sub">ID: ${id} · ${(DB.empleados||[]).filter(em=>em.empresa===id).length} empleado(s)</div>
+                <div style="display:flex;gap:8px">
+                    <button class="btn-icon btn-edit" onclick="openEmpleadoModal(undefined,'${id}')" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3)">+ Empleado</button>
+                    <button class="btn-icon btn-edit" onclick="openEmpresaModal('${id}')" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.25)">Editar</button>
+                </div>
             </div>
-            <div class="card-actions">
-                <button class="btn-icon btn-edit" onclick="openEmpresaModal('${id}')">Editar</button>
-                <button class="btn-icon btn-del"  onclick="deleteEmpresa('${id}')">Eliminar</button>
+            <!-- Info empresa -->
+            <div style="padding:14px 24px;display:flex;align-items:center;justify-content:space-between">
+                <div>
+                    <span style="font-weight:600;font-size:15px">${e.nombre}</span>
+                    <span style="font-size:13px;color:#888;margin-left:10px">${num} empleado${num!==1?'s':''}</span>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center">
+                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${e.color_primario};border:1px solid rgba(0,0,0,0.1)" title="Color primario"></span>
+                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${e.color_secundario};border:1px solid rgba(0,0,0,0.1)" title="Color secundario"></span>
+                    <button class="btn-icon btn-del" onclick="deleteEmpresa('${id}')">Eliminar</button>
+                </div>
             </div>
         </div>`;
     }).join('');
+}
+
+function lightenHex(hex, amt) {
+    try {
+        const n = parseInt((hex||'#000').replace('#',''), 16);
+        const r = Math.min(255, (n >> 16) + amt);
+        const g = Math.min(255, ((n >> 8) & 0xFF) + amt);
+        const b = Math.min(255, (n & 0xFF) + amt);
+        return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6,'0');
+    } catch(e) { return hex; }
 }
 
 function cardUrl(empresaId, empleadoId) {
@@ -690,12 +722,11 @@ function cardUrl(empresaId, empleadoId) {
 // ══════════════════════════════════════════════
 //  MODAL EMPLEADO
 // ══════════════════════════════════════════════
-function openEmpleadoModal(index) {
-    const isEdit = index !== undefined;
+function openEmpleadoModal(index, preselectedEmpresa) {
+    const isEdit = index !== undefined && index !== null && preselectedEmpresa === undefined;
     document.getElementById('modal-empleado-title').textContent = isEdit ? 'Editar empleado' : 'Nuevo empleado';
     document.getElementById('emp-editing-id').value = isEdit ? index : '';
 
-    // Populate empresa select
     const sel = document.getElementById('emp-empresa');
     sel.innerHTML = Object.entries(DB.empresas || {}).map(([id, e]) =>
         `<option value="${id}">${e.subnombre ? e.nombre + ' — ' + e.subnombre : e.nombre}</option>`
@@ -710,6 +741,7 @@ function openEmpleadoModal(index) {
         document.getElementById('emp-tel').value      = e.telefono || '';
         document.getElementById('emp-email').value    = e.email    || '';
         document.getElementById('emp-linkedin').value = e.linkedin || '';
+        document.getElementById('emp-web').value      = e.web      || '';
         document.getElementById('emp-foto-url').value = e.foto     || '';
         previewFotoUrl(e.foto || '');
         updateEmpUrlPreview();
@@ -720,11 +752,14 @@ function openEmpleadoModal(index) {
         document.getElementById('emp-tel').value      = '';
         document.getElementById('emp-email').value    = '';
         document.getElementById('emp-linkedin').value = '';
+        document.getElementById('emp-web').value      = '';
         document.getElementById('emp-foto-url').value = '';
         document.getElementById('emp-foto-file').value = '';
         document.getElementById('foto-preview').style.display = 'none';
         document.getElementById('foto-text').textContent = 'Seleccionar imagen...';
+        document.getElementById('foto-size-warn').style.display = 'none';
         document.getElementById('emp-url-preview-wrap').style.display = 'none';
+        if (preselectedEmpresa) sel.value = preselectedEmpresa;
     }
 
     document.getElementById('modal-empleado').classList.add('open');
@@ -767,9 +802,10 @@ async function saveEmpleado(event) {
         const fotoFile = document.getElementById('emp-foto-file').files[0];
 
         if (fotoFile) {
-            const empId = document.getElementById('emp-id').value;
-            const ext   = fotoFile.name.split('.').pop();
-            fotoPath    = await uploadImage('assets/fotos', empId + '.' + ext, fotoFile);
+            const empId     = document.getElementById('emp-id').value;
+            const ext       = fotoFile.name.split('.').pop().toLowerCase();
+            const compressed = await compressImage(fotoFile, 400, 400, 0.82);
+            fotoPath = await uploadImage('assets/fotos', empId + '.jpg', compressed);
         }
 
         const empleado = {
@@ -780,6 +816,7 @@ async function saveEmpleado(event) {
             telefono: document.getElementById('emp-tel').value.trim(),
             email:    document.getElementById('emp-email').value.trim(),
             linkedin: document.getElementById('emp-linkedin').value.trim(),
+            web:      document.getElementById('emp-web').value.trim(),
             foto:     fotoPath
         };
 
@@ -949,11 +986,42 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 
 function previewFoto(input) {
     if (!input.files[0]) return;
-    const url = URL.createObjectURL(input.files[0]);
-    const img = document.getElementById('foto-preview');
+    const file = input.files[0];
+    const url  = URL.createObjectURL(file);
+    const img  = document.getElementById('foto-preview');
     img.src = url; img.style.display = '';
-    document.getElementById('foto-text').textContent = input.files[0].name;
+    const kb  = Math.round(file.size / 1024);
+    const warn = document.getElementById('foto-size-warn');
+    if (file.size > 300 * 1024) {
+        warn.textContent = '⚠ Archivo grande (' + kb + 'KB). Se comprimirá automáticamente al guardar.';
+        warn.style.display = '';
+    } else {
+        warn.style.display = 'none';
+    }
+    document.getElementById('foto-text').textContent = file.name + ' (' + kb + 'KB)';
     document.getElementById('emp-foto-url').value = '';
+}
+
+// Comprime y redimensiona imagen antes de subir
+function compressImage(file, maxW, maxH, quality) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > maxW || h > maxH) {
+                const ratio = Math.min(maxW / w, maxH / h);
+                w = Math.round(w * ratio);
+                h = Math.round(h * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            canvas.toBlob(blob => resolve(blob || file), 'image/jpeg', quality);
+            URL.revokeObjectURL(url);
+        };
+        img.src = url;
+    });
 }
 function previewFotoUrl(url) {
     const img = document.getElementById('foto-preview');
