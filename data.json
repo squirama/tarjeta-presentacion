@@ -26,6 +26,17 @@
       "linkedin": "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
       "web": "https://bodegascare.com/",
       "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
+    },
+    {
+      "id": "raquel-diaz",
+      "empresa": "care",
+      "nombre": "Raquel Díaz Guerrero",
+      "puesto": "Administradora",
+      "telefono": "679091926",
+      "email": "raquel.diaz@bodegascare.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
