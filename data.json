@@ -13,6 +13,13 @@
       "color_primario": "#CC0000",
       "color_secundario": "#707070",
       "logo": "logo-estacion-lajoyosa.png"
+    },
+    "eurozasa": {
+      "nombre": "EUROZASA SL",
+      "subnombre": "",
+      "color_primario": "#0040ff",
+      "color_secundario": "#ffffff",
+      "logo": ""
     }
   },
   "empleados": [
