@@ -55,6 +55,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "raquel-diaz",
+      "empresa": "eurozasa",
+      "nombre": "Raquel Díaz Guerrero",
+      "puesto": "Directora/Propietaria",
+      "telefono": "+34 679 09 19 26",
+      "email": "raquel.diaz@eurozasa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
