@@ -77,6 +77,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "roberto-coll-comercial",
+      "empresa": "joyosa",
+      "nombre": "Roberto Coll Sanz",
+      "puesto": "Comercial",
+      "telefono": "+34 613 74 09 53",
+      "email": "comercial@eslajoyosa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
