@@ -143,6 +143,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "andrea-del",
+      "empresa": "joyosa",
+      "nombre": "Andrea Del Amo Martinez",
+      "puesto": "Compras",
+      "telefono": "+34 623 23 31 91",
+      "email": "compras@eslajoyosa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
