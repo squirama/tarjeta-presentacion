@@ -88,6 +88,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "sandra-royo",
+      "empresa": "joyosa",
+      "nombre": "Sandra Royo Ramirez",
+      "puesto": "Recursos humanos",
+      "telefono": "+34 623 52 30 72",
+      "email": "rrhh@eslajoyosa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
