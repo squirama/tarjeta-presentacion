@@ -110,6 +110,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "javier-martinez",
+      "empresa": "joyosa",
+      "nombre": "Javier Martínez",
+      "puesto": "Comercial",
+      "telefono": "+34 722 21 58 26",
+      "email": "ventas@eslajoyosa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
