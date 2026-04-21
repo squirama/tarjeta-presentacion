@@ -132,6 +132,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "isabel-granada",
+      "empresa": "joyosa",
+      "nombre": "Isabel Granada Bernal",
+      "puesto": "Administración",
+      "telefono": "+34 976 65 10 00",
+      "email": "oficina@eslajoyosa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
