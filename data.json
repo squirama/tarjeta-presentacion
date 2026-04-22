@@ -163,6 +163,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "carlos-marco",
+      "empresa": "care",
+      "nombre": "Carlos Marco Andueza",
+      "puesto": "managing",
+      "telefono": "+34 619 51 35 45",
+      "email": "carlos.marco@bodegacare.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
