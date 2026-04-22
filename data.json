@@ -1,48 +1,48 @@
 {
-    "empresas": {
-          "care": {
-                  "nombre": "Bodegas Care",
-                  "subnombre": "",
-                  "color_primario": "#1A1A1A",
-                  "color_secundario": "#D4AF37",
-                  "color_texto": "#FFFFFF",
-                  "color_qr_oscuro": "#1A1A1A",
-                  "color_qr_claro": "#FFFFFF",
-                  "logo": "Care-wines-2-e1596727301651-600x237.png"
-          },
-          "joyosa": {
-                  "nombre": "La Joyosa",
-                  "subnombre": "Estación de Servicio",
-                  "color_primario": "#CC0000",
-                  "color_secundario": "#707070",
-                  "color_texto": "#FFFFFF",
-                  "color_qr_oscuro": "#800000",
-                  "color_qr_claro": "#FFFFFF",
-                  "logo": "logo-estacion-lajoyosa.png"
-          },
-          "eurozasa": {
-                  "nombre": "EUROZASA SL",
-                  "subnombre": "",
-                  "color_primario": "#c1cce6",
-                  "color_secundario": "#0040ff",
-                  "color_texto": "#000000",
-                  "color_qr_oscuro": "#0040ff",
-                  "color_qr_claro": "#FFFFFF",
-                  "logo": "assets/logos/eurozasa.png"
-          }
+  "empresas": {
+    "care": {
+      "nombre": "Bodegas Care",
+      "subnombre": "",
+      "color_primario": "#1A1A1A",
+      "color_secundario": "#D4AF37",
+      "color_texto": "#FFFFFF",
+      "color_qr_oscuro": "#1A1A1A",
+      "color_qr_claro": "#FFFFFF",
+      "logo": "Care-wines-2-e1596727301651-600x237.png"
     },
-    "empleados": [
-          {
-                  "id": "stiven",
-                  "empresa": "care",
-                  "nombre": "Stiven Quirama Orozco",
-                  "puesto": "Responsable de Mantenimiento",
-                  "telefono": "+34722894100",
-                  "email": "mantenimiento@bodegascare.com",
-                  "linkedin": "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
-                  "web": "https://bodegascare.com/",
-                  "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
- },
+    "joyosa": {
+      "nombre": "La Joyosa",
+      "subnombre": "Estación de Servicio",
+      "color_primario": "#CC0000",
+      "color_secundario": "#707070",
+      "color_texto": "#FFFFFF",
+      "color_qr_oscuro": "#800000",
+      "color_qr_claro": "#FFFFFF",
+      "logo": "logo-estacion-lajoyosa.png"
+    },
+    "eurozasa": {
+      "nombre": "EUROZASA SL",
+      "subnombre": "",
+      "color_primario": "#ffffff",
+      "color_secundario": "#0040ff",
+      "color_texto": "#000000",
+      "color_qr_oscuro": "#0040ff",
+      "color_qr_claro": "#FFFFFF",
+      "logo": "assets/logos/eurozasa.png"
+    }
+  },
+  "empleados": [
+    {
+      "id": "stiven",
+      "empresa": "care",
+      "nombre": "Stiven Quirama Orozco",
+      "puesto": "Responsable de Mantenimiento",
+      "telefono": "+34722894100",
+      "email": "mantenimiento@bodegascare.com",
+      "linkedin": "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
+      "web": "https://bodegascare.com/",
+      "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
+    },
     {
       "id": "raquel-diaz",
       "empresa": "care",
