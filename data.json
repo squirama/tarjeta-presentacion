@@ -27,7 +27,7 @@
       "color_secundario": "#0040ff",
       "color_texto": "#000000",
       "color_qr_oscuro": "#0040ff",
-      "color_qr_claro": "#FFFFFF",
+      "color_qr_claro": "#000000",
       "logo": "assets/logos/eurozasa.png"
     }
   },
