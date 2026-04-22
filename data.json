@@ -1,159 +1,47 @@
 {
-  "empresas": {
-    "care": {
-      "nombre": "Bodegas Care",
-      "subnombre": "",
-      "color_primario": "#1A1A1A",
-      "color_secundario": "#D4AF37",
-      "logo": "Care-wines-2-e1596727301651-600x237.png"
+    "empresas": {
+          "care": {
+                  "nombre": "Bodegas Care",
+                  "subnombre": "",
+                  "color_primario": "#1A1A1A",
+                  "color_secundario": "#D4AF37",
+                  "color_texto": "#FFFFFF",
+                  "color_qr_oscuro": "#1A1A1A",
+                  "color_qr_claro": "#FFFFFF",
+                  "logo": "Care-wines-2-e1596727301651-600x237.png"
+          },
+          "joyosa": {
+                  "nombre": "La Joyosa",
+                  "subnombre": "Estación de Servicio",
+                  "color_primario": "#CC0000",
+                  "color_secundario": "#707070",
+                  "color_texto": "#FFFFFF",
+                  "color_qr_oscuro": "#800000",
+                  "color_qr_claro": "#FFFFFF",
+                  "logo": "logo-estacion-lajoyosa.png"
+          },
+          "eurozasa": {
+                  "nombre": "EUROZASA SL",
+                  "subnombre": "",
+                  "color_primario": "#c1cce6",
+                  "color_secundario": "#0040ff",
+                  "color_texto": "#000000",
+                  "color_qr_oscuro": "#0040ff",
+                  "color_qr_claro": "#FFFFFF",
+                  "logo": "assets/logos/eurozasa.png"
+          }
     },
-    "joyosa": {
-      "nombre": "La Joyosa",
-      "subnombre": "Estación de Servicio",
-      "color_primario": "#CC0000",
-      "color_secundario": "#707070",
-      "logo": "logo-estacion-lajoyosa.png"
-    },
-    "eurozasa": {
-      "nombre": "EUROZASA SL",
-      "subnombre": "",
-      "color_primario": "#c1cce6",
-      "color_secundario": "#0040ff",
-      "logo": "assets/logos/eurozasa.png"
-    }
-  },
-  "empleados": [
-    {
-      "id": "stiven",
-      "empresa": "care",
-      "nombre": "Stiven Quirama Orozco",
-      "puesto": "Responsable de Mantenimiento",
-      "telefono": "+34722894100",
-      "email": "mantenimiento@bodegascare.com",
-      "linkedin": "",
-      "web": "",
-      "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
-    },
-    {
-      "id": "raquel-diaz",
-      "empresa": "care",
-      "nombre": "Raquel Díaz Guerrero",
-      "puesto": "Propietaria",
-      "telefono": "679091926",
-      "email": "raquel.diaz@bodegascare.com",
-      "linkedin": "",
-      "web": "",
-      "foto": "assets/fotos/raquel-diaz.jpg"
-    },
-    {
-      "id": "raquel-diaz",
-      "empresa": "joyosa",
-      "nombre": "Raquel Díaz Guerrero",
-      "puesto": "Gerente",
-      "telefono": "+34 679 09 19 26",
-      "email": "raquel.diaz@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": "assets/fotos/raquel-diaz.jpg"
-    },
-    {
-      "id": "raquel-diaz",
-      "empresa": "eurozasa",
-      "nombre": "Raquel Díaz Guerrero",
-      "puesto": "Directora/Propietaria",
-      "telefono": "+34 679 09 19 26",
-      "email": "raquel.diaz@eurozasa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": "assets/fotos/raquel-diaz.jpg"
-    },
-    {
-      "id": "roberto-coll",
-      "empresa": "joyosa",
-      "nombre": "Roberto Coll Sanz",
-      "puesto": "Encargado general",
-      "telefono": "+34 613 74 09 53",
-      "email": "roberto@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "roberto-coll-comercial",
-      "empresa": "joyosa",
-      "nombre": "Roberto Coll Sanz",
-      "puesto": "Comercial",
-      "telefono": "+34 613 74 09 53",
-      "email": "comercial@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "sandra-royo",
-      "empresa": "joyosa",
-      "nombre": "Sandra Royo Ramirez",
-      "puesto": "Recursos humanos",
-      "telefono": "+34 623 52 30 72",
-      "email": "rrhh@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "sandra-royo-euro",
-      "empresa": "eurozasa",
-      "nombre": "Sandra Royo Ramirez",
-      "puesto": "Recursos humanos",
-      "telefono": "+34 623 52 30 72",
-      "email": "sandra.royo@eurozasa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "javier-martinez",
-      "empresa": "joyosa",
-      "nombre": "Javier Martínez",
-      "puesto": "Comercial",
-      "telefono": "+34 722 21 58 26",
-      "email": "ventas@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "cristina-ezquerra",
-      "empresa": "joyosa",
-      "nombre": "Cristina Ezquerra Buisán",
-      "puesto": "Administración",
-      "telefono": "+34 622 49 98 25",
-      "email": "cristina@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "isabel-granada",
-      "empresa": "joyosa",
-      "nombre": "Isabel Granada Bernal",
-      "puesto": "Administración",
-      "telefono": "+34 976 65 10 00",
-      "email": "oficina@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    },
-    {
-      "id": "andrea-del",
-      "empresa": "joyosa",
-      "nombre": "Andrea Del Amo Martinez",
-      "puesto": "Compras",
-      "telefono": "+34 623 23 31 91",
-      "email": "compras@eslajoyosa.com",
-      "linkedin": "",
-      "web": "",
-      "foto": ""
-    }
-  ]
+    "empleados": [
+          {
+                  "id": "stiven",
+                  "empresa": "care",
+                  "nombre": "Stiven Quirama Orozco",
+                  "puesto": "Responsable de Mantenimiento",
+                  "telefono": "+34722894100",
+                  "email": "mantenimiento@bodegascare.com",
+                  "linkedin": "https://www.linkedin.com/in/stiven-quirama-orozco-690b72265",
+                  "web": "https://bodegascare.com/",
+                  "foto": "WhatsApp Image 2026-04-16 at 07.58.05.jpeg"
+          }
+    ]
 }
