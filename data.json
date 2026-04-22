@@ -23,7 +23,7 @@
     "eurozasa": {
       "nombre": "EUROZASA SL",
       "subnombre": "",
-      "color_primario": "#ffffff",
+      "color_primario": "#000000",
       "color_secundario": "#0040ff",
       "color_texto": "#000000",
       "color_qr_oscuro": "#0040ff",
