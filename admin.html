@@ -469,48 +469,39 @@
                     <input type="text" id="empr-subnombre" placeholder="ej: Gasolinera (opcional)">
                 </div>
             </div>
-            <div class="form-group">-picker')" placeholder="#1A1A1A">
-            </div>
-        </form>div>
-    </div>
-                <div class="form-group">
-                                    <label>Color QR claro *</label>label>
-                                    <div class="color-input-wrap">
-                                                            <input type="color" id="empr-color5-picker" value="#FFFFFF" oninput="syncColor(this,'empr-color5')">
-                                                            <input type="text"  id="empr-color5" value="#FFFFFF" oninput="syncColorText(this,'empr-color5-picker')" placeholder="#FFFFFF">
-                                    </div>
-                </div>
+            <div class="form-group">
                 <label>ID (URL) *</label>
                 <input type="text" id="empr-id" required pattern="[a-z0-9\-]+" placeholder="ej: care, joyosa-gasolinera">
                 <div class="form-hint">Solo minúsculas, números y guiones. No se puede cambiar después.</div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Color primario *</label>
-                    <div class="color-input-wrap">
-                        <input type="color" id="empr-color1-picker" value="#1A1A1A" oninput="syncColor(this,'empr-color1')">
-                        <input type="text"  id="empr-color1" value="#1A1A1A" oninput="syncColorText(this,'empr-color1-picker')" placeholder="#1A1A1A">
+            <div class="form-group">
+                <label>Colores</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:8px; align-items:end">
+                    <div style="display:flex; flex-direction:column; gap:4px">
+                        <span style="font-size:11px; color:#888">Primario</span>
+                        <input type="color" id="empr-color1-picker" value="#1A1A1A" oninput="syncColor(this,'empr-color1')" style="width:100%; height:40px; border-radius:6px; cursor:pointer; border:2px solid #E0E0E0">
+                        <input type="text" id="empr-color1" value="#1A1A1A" oninput="syncColorText(this,'empr-color1-picker')" placeholder="#1A1A1A" style="font-size:11px; padding:4px">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Color secundario *</label>
-                    <div class="color-input-wrap">
-                        <input type="color" id="empr-color2-picker" value="#D4AF37" oninput="syncColor(this,'empr-color2')">
-                        <input type="text"  id="empr-color2" value="#D4AF37" oninput="syncColorText(this,'empr-color2-picker')" placeholder="#D4AF37">
+                    <div style="display:flex; flex-direction:column; gap:4px">
+                        <span style="font-size:11px; color:#888">Secundario</span>
+                        <input type="color" id="empr-color2-picker" value="#D4AF37" oninput="syncColor(this,'empr-color2')" style="width:100%; height:40px; border-radius:6px; cursor:pointer; border:2px solid #E0E0E0">
+                        <input type="text" id="empr-color2" value="#D4AF37" oninput="syncColorText(this,'empr-color2-picker')" placeholder="#D4AF37" style="font-size:11px; padding:4px">
                     </div>
-                                <div class="form-row">
-                                                    <div class="form-group">
-                                                                            <label>Color de texto (nombre) *</label>
-                                                                        <div class="color-input-wrap">
-                                                                                                <input type="color" id="empr-color3-picker" value="#FFFFFF" oninput="syncColor(this,'empr-color3')">
-                                                                                                <input type="text"  id="empr-color3" value="#FFFFFF" oninput="syncColorText(this,'empr-color3-picker')" placeholder="#FFFFFF">
-                                                                        </div>
-                                                    </div>
-                                                <div class="form-group">
-                                                                    <label>Color QR oscuro *</label>
-                                                                    <div class="color-input-wrap">
-                                                                                            <input type="color" id="empr-color4-picker" value="#1A1A1A" oninput="syncColor(this,'empr-color4')">
-                                                                                            <input type="text"  id="empr-color4" value="#1A1A1A" oninput="syncColorText(this,'empr-color4</label></label>
+                    <div style="display:flex; flex-direction:column; gap:4px">
+                        <span style="font-size:11px; color:#888">Texto</span>
+                        <input type="color" id="empr-color3-picker" value="#FFFFFF" oninput="syncColor(this,'empr-color3')" style="width:100%; height:40px; border-radius:6px; cursor:pointer; border:2px solid #E0E0E0">
+                        <input type="text" id="empr-color3" value="#FFFFFF" oninput="syncColorText(this,'empr-color3-picker')" placeholder="#FFFFFF" style="font-size:11px; padding:4px">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px">
+                        <span style="font-size:11px; color:#888">QR Oscuro</span>
+                        <input type="color" id="empr-color4-picker" value="#1A1A1A" oninput="syncColor(this,'empr-color4')" style="width:100%; height:40px; border-radius:6px; cursor:pointer; border:2px solid #E0E0E0">
+                        <input type="text" id="empr-color4" value="#1A1A1A" oninput="syncColorText(this,'empr-color4-picker')" placeholder="#1A1A1A" style="font-size:11px; padding:4px">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px">
+                        <span style="font-size:11px; color:#888">QR Claro</span>
+                        <input type="color" id="empr-color5-picker" value="#FFFFFF" oninput="syncColor(this,'empr-color5')" style="width:100%; height:40px; border-radius:6px; cursor:pointer; border:2px solid #E0E0E0">
+                        <input type="text" id="empr-color5" value="#FFFFFF" oninput="syncColorText(this,'empr-color5-picker')" placeholder="#FFFFFF" style="font-size:11px; padding:4px">
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -898,8 +889,14 @@ function openEmpresaModal(id) {
         document.getElementById('empr-subnombre').value   = e.subnombre   || '';
         document.getElementById('empr-color1').value      = e.color_primario   || '#1A1A1A';
         document.getElementById('empr-color2').value      = e.color_secundario || '#D4AF37';
+        document.getElementById('empr-color3').value      = e.color_texto || '#FFFFFF';
+        document.getElementById('empr-color4').value      = e.color_qr_oscuro || '#1A1A1A';
+        document.getElementById('empr-color5').value      = e.color_qr_claro || '#FFFFFF';
         document.getElementById('empr-color1-picker').value = e.color_primario   || '#1A1A1A';
         document.getElementById('empr-color2-picker').value = e.color_secundario || '#D4AF37';
+        document.getElementById('empr-color3-picker').value = e.color_texto || '#FFFFFF';
+        document.getElementById('empr-color4-picker').value = e.color_qr_oscuro || '#1A1A1A';
+        document.getElementById('empr-color5-picker').value = e.color_qr_claro || '#FFFFFF';
         document.getElementById('empr-logo-url').value    = e.logo || '';
         previewLogoUrl(e.logo || '');
     } else {
@@ -909,8 +906,14 @@ function openEmpresaModal(id) {
         document.getElementById('empr-subnombre').value   = '';
         document.getElementById('empr-color1').value      = '#1A1A1A';
         document.getElementById('empr-color2').value      = '#D4AF37';
+        document.getElementById('empr-color3').value      = '#FFFFFF';
+        document.getElementById('empr-color4').value      = '#1A1A1A';
+        document.getElementById('empr-color5').value      = '#FFFFFF';
         document.getElementById('empr-color1-picker').value = '#1A1A1A';
         document.getElementById('empr-color2-picker').value = '#D4AF37';
+        document.getElementById('empr-color3-picker').value = '#FFFFFF';
+        document.getElementById('empr-color4-picker').value = '#1A1A1A';
+        document.getElementById('empr-color5-picker').value = '#FFFFFF';
         document.getElementById('empr-logo-url').value    = '';
         document.getElementById('empr-logo-file').value   = '';
         document.getElementById('logo-preview').style.display = 'none';
@@ -946,6 +949,9 @@ async function saveEmpresa(event) {
             subnombre:        document.getElementById('empr-subnombre').value.trim(),
             color_primario:   document.getElementById('empr-color1').value.trim(),
             color_secundario: document.getElementById('empr-color2').value.trim(),
+            color_texto:      document.getElementById('empr-color3').value.trim(),
+            color_qr_oscuro:  document.getElementById('empr-color4').value.trim(),
+            color_qr_claro:   document.getElementById('empr-color5').value.trim(),
             logo:             logoPath
         };
 
