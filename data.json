@@ -185,6 +185,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "juan-carlos",
+      "empresa": "care",
+      "nombre": "Juan Carlos Benito",
+      "puesto": "Director de ventas nacional",
+      "telefono": "+34 695 23 81 51",
+      "email": "spain@bodegascare.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
