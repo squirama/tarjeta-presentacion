@@ -196,6 +196,17 @@
       "linkedin": "",
       "web": "",
       "foto": ""
+    },
+    {
+      "id": "nacho-lazaro",
+      "empresa": "care",
+      "nombre": "Nacho Lázaro Delgado",
+      "puesto": "Winery Owner & Sales Director",
+      "telefono": "+34 616997392",
+      "email": "nacho.lazaro@bodegascare.com",
+      "linkedin": "",
+      "web": "",
+      "foto": ""
     }
   ]
 }
