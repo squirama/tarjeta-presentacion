@@ -250,6 +250,17 @@
       "linkedin": "",
       "web": "https://clinicadentalplazaalfonso.com/",
       "foto": "assets/fotos/dr-juan.jpg"
+    },
+    {
+      "id": "dra-mercedes",
+      "empresa": "dd",
+      "nombre": "Dra. Mercedes Plaza Alfonso",
+      "puesto": "Doctora",
+      "telefono": "",
+      "email": "Info@clinicadentalplazaalfonso.com",
+      "linkedin": "",
+      "web": "https://clinicadentalplazaalfonso.com/",
+      "foto": "assets/fotos/dra-mercedes.jpg"
     }
   ]
 }
