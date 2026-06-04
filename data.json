@@ -29,6 +29,16 @@
       "color_qr_oscuro": "#0040ff",
       "color_qr_claro": "#000000",
       "logo": "assets/logos/eurozasa.png"
+    },
+    "dd": {
+      "nombre": "Clinica Dental Plaza Alfonso",
+      "subnombre": "",
+      "color_primario": "#ffffff",
+      "color_secundario": "#17acde",
+      "color_texto": "#000000",
+      "color_qr_oscuro": "#1A1A1A",
+      "color_qr_claro": "#FFFFFF",
+      "logo": "assets/logos/dd.png"
     }
   },
   "empleados": [
