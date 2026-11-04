@@ -332,9 +332,11 @@
                     </div>
                     <div class="form-group">
                         <label>Personal Access Token</label>
-                        <input type="password" id="cfg-token" placeholder="github_pat_...">
+                        <input type="password" id="cfg-token" placeholder="github_pat_..." autocomplete="off">
                     </div>
                     <button class="btn-submit" onclick="saveToken()">Guardar token</button>
+                    <button class="btn-cancel" type="button" onclick="testToken()" style="margin-left:8px">Probar token guardado</button>
+                    <div id="cfg-token-status" class="form-hint" style="margin-top:10px;font-weight:600"></div>
                 </div>
 
                 <div class="config-card">
@@ -1024,7 +1026,14 @@ function deleteEmpresa(id) {
 // ══════════════════════════════════════════════
 function loadConfigForm() {
     const t = document.getElementById('cfg-token');
-    if (t) t.value = getToken() ? '••••••••••••' : '';
+    // El campo va SIEMPRE vacío: antes se rellenaba con "••••" y al pegar el token
+    // nuevo quedaba "••••github_pat_..." → se rechazaba y seguía el token viejo.
+    if (t) {
+        t.value = '';
+        const tk = getToken();
+        t.placeholder = tk ? 'Guardado: ' + tk.slice(0, 11) + '…' + tk.slice(-4) + '  (pega aquí uno nuevo para reemplazarlo)'
+                           : 'github_pat_...';
+    }
     const r = document.getElementById('cfg-repo');
     if (r) r.value = getRepo();
     const b = document.getElementById('cfg-baseurl');
@@ -1032,24 +1041,34 @@ function loadConfigForm() {
 }
 
 function saveToken() {
-    const v = document.getElementById('cfg-token').value.trim();
-    if (!v || v.startsWith('•')) { showToast('Introduce un token válido', 'error'); return; }
+    // Quita espacios/saltos de línea y puntos de máscara que se cuelan al copiar/pegar
+    const v = document.getElementById('cfg-token').value.replace(/[\s•]/g, '');
+    if (!/^(github_pat_|ghp_)[A-Za-z0-9_]+$/.test(v)) {
+        showToast('Eso no parece un token de GitHub (debe empezar por github_pat_)', 'error'); return;
+    }
     localStorage.setItem('github_token', v);
+    loadConfigForm();
     testToken();
 }
 
 // Comprueba token + permisos de escritura sobre el repo
 async function testToken() {
     try {
+        requireToken();
         const r = await fetch(`https://api.github.com/repos/${getRepo()}`, { headers: ghHeaders(), cache: 'no-store' });
         if (!r.ok) throw ghError(r.status, getRepo());
         const repo = await r.json();
         if (repo.permissions && !repo.permissions.push)
             throw new Error('Token válido, pero SIN permiso de escritura en ' + getRepo());
-        showToast('Token guardado y verificado ✓', 'success');
+        setTokenStatus('✓ Token válido con permiso de escritura (…' + getToken().slice(-4) + ')', true);
     } catch(e) {
-        showToast('Token guardado, pero: ' + e.message, 'error');
+        setTokenStatus('✗ ' + e.message + (getToken() ? ' (token en uso: …' + getToken().slice(-4) + ')' : ''), false);
     }
+}
+function setTokenStatus(msg, ok) {
+    const el = document.getElementById('cfg-token-status');
+    if (el) { el.textContent = msg; el.style.color = ok ? '#2E7D32' : '#D32F2F'; }
+    showToast(msg, ok ? 'success' : 'error');
 }
 
 function changePassword() {
