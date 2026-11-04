@@ -585,46 +585,78 @@ function showSection(name) {
 // ══════════════════════════════════════════════
 //  GITHUB API
 // ══════════════════════════════════════════════
-async function ghGet(path) {
-    const r = await fetch(`https://api.github.com/repos/${getRepo()}/contents/${path}`, {
-        headers: { 'Authorization': 'Bearer ' + getToken(), 'Accept': 'application/vnd.github+json' }
-    });
-    if (!r.ok) throw new Error('GitHub ' + r.status + ' al leer ' + path);
-    return r.json();
+// Traduce códigos HTTP de GitHub a mensajes accionables
+function ghError(status, path, apiMsg) {
+    const m = {
+        401: 'Token de GitHub inválido o caducado. Genera uno nuevo en Configuración.',
+        403: 'El token no tiene permiso de escritura (Contents: Read and write) en ' + getRepo() + '.',
+        404: 'Repositorio "' + getRepo() + '" no encontrado o el token no tiene acceso a él.',
+        409: 'Conflicto de versión en ' + path + ' (se modificó en paralelo). Reintenta.',
+        422: 'GitHub rechazó ' + path + ': ' + (apiMsg || 'datos no válidos') + '.'
+    };
+    const e = new Error(m[status] || ('GitHub ' + status + (apiMsg ? ': ' + apiMsg : '') + ' (' + path + ')'));
+    e.status = status;
+    return e;
 }
 
-async function ghPut(path, content, sha, message, isBinary = false) {
-    const encoded = isBinary ? content : btoa(unescape(encodeURIComponent(content)));
-    const body    = { message: message || 'Actualizar ' + path, content: encoded };
-    if (sha) body.sha = sha;
-    const r = await fetch(`https://api.github.com/repos/${getRepo()}/contents/${path}`, {
-        method: 'PUT',
-        headers: {
-            'Authorization': 'Bearer ' + getToken(),
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github+json'
-        },
-        body: JSON.stringify(body)
-    });
+function ghUrl(path) {
+    // Codifica cada segmento (espacios, tildes...) sin tocar las "/"
+    return `https://api.github.com/repos/${getRepo()}/contents/` + path.split('/').map(encodeURIComponent).join('/');
+}
+
+function ghHeaders(extra) {
+    return Object.assign({
+        'Authorization': 'Bearer ' + getToken(),
+        'Accept': 'application/vnd.github+json'
+    }, extra || {});
+}
+
+function requireToken() {
+    if (!getToken()) throw new Error('Falta el token de GitHub. Configúralo en la sección Configuración.');
+}
+
+// Devuelve el sha actual del fichero, o null si no existe (404).
+// cache:'no-store' es CLAVE: la API de GitHub responde con max-age=60 y,
+// sin esto, el navegador devuelve un sha antiguo → error 409 al guardar
+// dos veces seguidas en menos de un minuto.
+async function ghGetSha(path) {
+    const r = await fetch(ghUrl(path) + '?t=' + Date.now(), { headers: ghHeaders(), cache: 'no-store' });
+    if (r.status === 404) return null;
     if (!r.ok) {
         const err = await r.json().catch(() => ({}));
-        throw new Error(err.message || 'GitHub ' + r.status);
+        throw ghError(r.status, path, err.message);
     }
-    return r.json();
+    return (await r.json()).sha;
 }
 
-async function saveDataJson() {
-    let sha = null;
-    try { const f = await ghGet('data.json'); sha = f.sha; } catch(e) {}
-    await ghPut('data.json', JSON.stringify(DB, null, 2), sha, 'Actualizar tarjetas corporativas');
+async function ghPut(path, content, message, isBinary = false) {
+    requireToken();
+    const encoded = isBinary ? content : btoa(unescape(encodeURIComponent(content)));
+    // Hasta 2 intentos: si hay conflicto de sha (409/422 "does not match"), relee y reintenta
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        const sha  = await ghGetSha(path);
+        const body = { message: message || 'Actualizar ' + path, content: encoded };
+        if (sha) body.sha = sha;
+        const r = await fetch(ghUrl(path), {
+            method: 'PUT',
+            headers: ghHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(body)
+        });
+        if (r.ok) return r.json();
+        const err = await r.json().catch(() => ({}));
+        const shaConflict = r.status === 409 || (r.status === 422 && /sha/i.test(err.message || ''));
+        if (!(shaConflict && attempt < 2)) throw ghError(r.status, path, err.message);
+    }
+}
+
+async function saveDataJson(db) {
+    await ghPut('data.json', JSON.stringify(db || DB, null, 2), 'Actualizar tarjetas corporativas');
 }
 
 async function uploadImage(folder, filename, file) {
     const base64 = await fileToBase64(file);
     const path   = folder + '/' + filename;
-    let sha = null;
-    try { const f = await ghGet(path); sha = f.sha; } catch(e) {}
-    await ghPut(path, base64, sha, 'Subir imagen ' + filename, true);
+    await ghPut(path, base64, 'Subir imagen ' + filename, true);
     return path;
 }
 
@@ -817,22 +849,31 @@ async function saveEmpleado(event) {
     btn.innerHTML = '<span class="spinner-sm"></span>Guardando...';
 
     try {
+        requireToken();
         const editingIdx = document.getElementById('emp-editing-id').value;
         const isEdit     = editingIdx !== '';
+        const empId      = document.getElementById('emp-id').value.trim();
+        const empresa    = document.getElementById('emp-empresa').value;
+
+        if (!/^[a-z0-9\-]+$/.test(empId)) throw new Error('ID no válido: solo minúsculas, números y guiones');
+        if (!empresa || !DB.empresas[empresa]) throw new Error('Selecciona una empresa válida');
+
+        const lista = (DB.empleados || []).slice();   // copia: DB solo cambia si GitHub acepta
+        const dup = lista.findIndex(e => e.id === empId && e.empresa === empresa);
+        if (dup !== -1 && (!isEdit || dup !== parseInt(editingIdx)))
+            throw new Error('Ya existe un empleado con ese ID en esa empresa');
 
         let fotoPath = document.getElementById('emp-foto-url').value.trim();
         const fotoFile = document.getElementById('emp-foto-file').files[0];
 
         if (fotoFile) {
-            const empId     = document.getElementById('emp-id').value;
-            const ext       = fotoFile.name.split('.').pop().toLowerCase();
             const compressed = await compressImage(fotoFile, 400, 400, 0.82);
             fotoPath = await uploadImage('assets/fotos', empId + '.jpg', compressed);
         }
 
         const empleado = {
-            id:       document.getElementById('emp-id').value.trim(),
-            empresa:  document.getElementById('emp-empresa').value,
+            id:       empId,
+            empresa:  empresa,
             nombre:   document.getElementById('emp-nombre').value.trim(),
             puesto:   document.getElementById('emp-puesto').value.trim(),
             telefono: document.getElementById('emp-tel').value.trim(),
@@ -842,17 +883,12 @@ async function saveEmpleado(event) {
             foto:     fotoPath
         };
 
-        if (!DB.empleados) DB.empleados = [];
+        if (isEdit) lista[parseInt(editingIdx)] = empleado;
+        else        lista.push(empleado);
 
-        if (isEdit) {
-            DB.empleados[parseInt(editingIdx)] = empleado;
-        } else {
-            const dup = DB.empleados.find(e => e.id === empleado.id && e.empresa === empleado.empresa);
-            if (dup) throw new Error('Ya existe un empleado con ese ID en esa empresa');
-            DB.empleados.push(empleado);
-        }
-
-        await saveDataJson();
+        const nuevoDB = Object.assign({}, DB, { empleados: lista });
+        await saveDataJson(nuevoDB);
+        DB = nuevoDB;
         closeModal('modal-empleado');
         renderEmpleados();
         showToast('Empleado guardado correctamente', 'success');
@@ -867,9 +903,9 @@ async function saveEmpleado(event) {
 
 function deleteEmpleado(index) {
     if (!confirm('¿Eliminar este empleado?')) return;
-    DB.empleados.splice(index, 1);
-    saveDataJson()
-        .then(() => { renderEmpleados(); showToast('Empleado eliminado', 'success'); })
+    const nuevoDB = Object.assign({}, DB, { empleados: DB.empleados.filter((_, i) => i !== index) });
+    saveDataJson(nuevoDB)
+        .then(() => { DB = nuevoDB; renderEmpleados(); showToast('Empleado eliminado', 'success'); })
         .catch(e  => showToast('Error: ' + e.message, 'error'));
 }
 
@@ -933,6 +969,8 @@ async function saveEmpresa(event) {
         const editingId = document.getElementById('empr-editing-id').value;
         const isEdit    = editingId !== '';
         const id        = document.getElementById('empr-id').value.trim();
+        requireToken();
+        if (!/^[a-z0-9\-]+$/.test(id)) throw new Error('ID de empresa no válido: solo minúsculas, números y guiones');
 
         if (!isEdit && DB.empresas[id]) throw new Error('Ya existe una empresa con ese ID');
 
@@ -943,8 +981,8 @@ async function saveEmpresa(event) {
             logoPath  = await uploadImage('assets/logos', id + '.' + ext, logoFile);
         }
 
-        if (!DB.empresas) DB.empresas = {};
-        DB.empresas[id] = {
+        const empresas = Object.assign({}, DB.empresas || {});
+        empresas[id] = {
             nombre:           document.getElementById('empr-nombre').value.trim(),
             subnombre:        document.getElementById('empr-subnombre').value.trim(),
             color_primario:   document.getElementById('empr-color1').value.trim(),
@@ -955,7 +993,9 @@ async function saveEmpresa(event) {
             logo:             logoPath
         };
 
-        await saveDataJson();
+        const nuevoDB = Object.assign({}, DB, { empresas });
+        await saveDataJson(nuevoDB);
+        DB = nuevoDB;
         closeModal('modal-empresa');
         renderEmpresas();
         showToast('Empresa guardada correctamente', 'success');
@@ -972,9 +1012,10 @@ function deleteEmpresa(id) {
     const tiene = (DB.empleados || []).filter(e => e.empresa === id).length;
     if (tiene > 0) { showToast('No puedes eliminar una empresa con empleados asignados', 'error'); return; }
     if (!confirm('¿Eliminar la empresa "' + id + '"?')) return;
-    delete DB.empresas[id];
-    saveDataJson()
-        .then(() => { renderEmpresas(); showToast('Empresa eliminada', 'success'); })
+    const empresas = Object.assign({}, DB.empresas); delete empresas[id];
+    const nuevoDB = Object.assign({}, DB, { empresas });
+    saveDataJson(nuevoDB)
+        .then(() => { DB = nuevoDB; renderEmpresas(); showToast('Empresa eliminada', 'success'); })
         .catch(e  => showToast('Error: ' + e.message, 'error'));
 }
 
@@ -994,7 +1035,21 @@ function saveToken() {
     const v = document.getElementById('cfg-token').value.trim();
     if (!v || v.startsWith('•')) { showToast('Introduce un token válido', 'error'); return; }
     localStorage.setItem('github_token', v);
-    showToast('Token guardado', 'success');
+    testToken();
+}
+
+// Comprueba token + permisos de escritura sobre el repo
+async function testToken() {
+    try {
+        const r = await fetch(`https://api.github.com/repos/${getRepo()}`, { headers: ghHeaders(), cache: 'no-store' });
+        if (!r.ok) throw ghError(r.status, getRepo());
+        const repo = await r.json();
+        if (repo.permissions && !repo.permissions.push)
+            throw new Error('Token válido, pero SIN permiso de escritura en ' + getRepo());
+        showToast('Token guardado y verificado ✓', 'success');
+    } catch(e) {
+        showToast('Token guardado, pero: ' + e.message, 'error');
+    }
 }
 
 function changePassword() {
@@ -1041,7 +1096,7 @@ function previewFoto(input) {
 
 // Comprime y redimensiona imagen antes de subir
 function compressImage(file, maxW, maxH, quality) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const img = new Image();
         const url = URL.createObjectURL(file);
         img.onload = () => {
@@ -1056,6 +1111,10 @@ function compressImage(file, maxW, maxH, quality) {
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
             canvas.toBlob(blob => resolve(blob || file), 'image/jpeg', quality);
             URL.revokeObjectURL(url);
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('No se pudo leer la imagen (formato no soportado, p.ej. HEIC). Usa JPG o PNG.'));
         };
         img.src = url;
     });
