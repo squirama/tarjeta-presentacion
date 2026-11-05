@@ -261,6 +261,17 @@
       "linkedin": "",
       "web": "https://clinicadentalplazaalfonso.com/",
       "foto": "assets/fotos/dra-mercedes.jpg"
+    },
+    {
+      "id": "beatriz-lopez",
+      "empresa": "joyosa",
+      "nombre": "Beatriz López Ricao",
+      "puesto": "administración",
+      "telefono": "+34 622 49 98 25",
+      "email": "proveedores@eslajoyosa.com",
+      "linkedin": "",
+      "web": "",
+      "foto": "assets/fotos/beatriz-lopez.jpg"
     }
   ]
 }
