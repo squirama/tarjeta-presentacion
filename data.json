@@ -272,6 +272,17 @@
       "linkedin": "",
       "web": "",
       "foto": "assets/fotos/beatriz-lopez.jpg"
+    },
+    {
+      "id": "julie-dupagne",
+      "empresa": "joyosa",
+      "nombre": "Julie Dupagne",
+      "puesto": "Comercial",
+      "telefono": "",
+      "email": "",
+      "linkedin": "",
+      "web": "",
+      "foto": "assets/fotos/julie-dupagne.jpg"
     }
   ]
 }
