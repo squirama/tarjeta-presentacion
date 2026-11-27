@@ -591,7 +591,7 @@ function showSection(name) {
 function ghError(status, path, apiMsg) {
     const m = {
         401: 'Token de GitHub inválido o caducado. Genera uno nuevo en Configuración.',
-        403: 'El token no tiene permiso de escritura (Contents: Read and write) en ' + getRepo() + '.',
+        403: 'El token no tiene permiso de escritura en ' + getRepo() + '. En GitHub edita el token: Repository access → Only select repositories → ' + getRepo().split('/')[1] + ', y Permissions → Contents → Read and write.' + (apiMsg ? ' [GitHub: ' + apiMsg + ']' : ''),
         404: 'Repositorio "' + getRepo() + '" no encontrado o el token no tiene acceso a él.',
         409: 'Conflicto de versión en ' + path + ' (se modificó en paralelo). Reintenta.',
         422: 'GitHub rechazó ' + path + ': ' + (apiMsg || 'datos no válidos') + '.'
@@ -1058,9 +1058,9 @@ async function testToken() {
         const r = await fetch(`https://api.github.com/repos/${getRepo()}`, { headers: ghHeaders(), cache: 'no-store' });
         if (!r.ok) throw ghError(r.status, getRepo());
         const repo = await r.json();
-        if (repo.permissions && !repo.permissions.push)
-            throw new Error('Token válido, pero SIN permiso de escritura en ' + getRepo());
-        setTokenStatus('✓ Token válido con permiso de escritura (…' + getToken().slice(-4) + ')', true);
+        // OJO: repo.permissions refleja el rol del USUARIO, no los permisos del token
+        // fine-grained, así que no sirve para comprobar escritura. Lo decimos claro.
+        setTokenStatus('✓ Token válido y con acceso de lectura (…' + getToken().slice(-4) + '). El permiso de escritura se comprueba al guardar: si falla, revisa Contents → Read and write.', true);
     } catch(e) {
         setTokenStatus('✗ ' + e.message + (getToken() ? ' (token en uso: …' + getToken().slice(-4) + ')' : ''), false);
     }
